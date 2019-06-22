@@ -98,6 +98,8 @@ func getTodosHandler(c *gin.Context){
 	fmt.Println(todos)
 	c.JSON(200,todos)
 	return
+	//
+	//
 }
 
 
