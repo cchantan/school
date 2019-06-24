@@ -16,6 +16,7 @@ package main
 
 import (
 	"database/sql"
+	"strconv"
 	"os"
 	"log"
  	"fmt"
@@ -184,7 +185,8 @@ func deleteTodosByIdHandler(c *gin.Context){
 }
 
 func putTodosByIdHandler(c *gin.Context){
-	
+	idinput := c.Param("id")
+
 	t := Todo{}	
 	if err:=c.ShouldBindJSON(&t); err!=nil {
 		c.JSON(http.StatusBadRequest,err)
@@ -200,24 +202,24 @@ func putTodosByIdHandler(c *gin.Context){
 	}
 	defer db.Close()
 
-	//title := t.Title
-	//status := t.Status
 	query := `
-	UPDATE todos SET title = t.Title, status = t.Status  WHERE id=$1
+	UPDATE todos SET title = $2, status = $3  WHERE id=$1
 	`
-	var id int 
-	row := db.QueryRow(query, title, status)
-	err = row.Scan(&id)
+	db.QueryRow(query,idinput, t.Title, t.Status)
+
+	// err = row.Scan(&id)
+	// if err != nil {
+	// 	log.Fatal("can't scan id", id)
+	// }
+	//fmt.Println("Update success id", id)
+	t.ID, err = strconv.Atoi(idinput)
 	if err != nil {
-		log.Fatal("can't scan id", id)
+		c.JSON(http.StatusBadRequest,err)
+		return
 	}
-	fmt.Println("Insert success id", id)
-	t.ID = id
-	c.JSON(201,t)
+	c.JSON(200,t)
+	return
 }
-
-/////
-
 
 func main(){
 // r.GET("/ping",pingHandler)
