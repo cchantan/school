@@ -29,50 +29,6 @@ type Todo struct {
 	Title	string `json:"title"`
 	Status	string `json:"status"`
 }
-func pingHandler(c *gin.Context){
- response:=gin.H{"message":"This is ping GET",}
- c.JSON(http.StatusOK,response)
-}
-type Student struct{
-Name string  `json:"name"`
- ID   int     `json:"student_id"`
-}
-var students=map[int]Student{
- 1:Student{Name:"Anuchito",ID:1},
-}
-
-func postStudentHandler(c *gin.Context){
-//receive -> Student{....}
-s:=Student{}
-fmt.Printf("befor bind % #v\n",s)
-if err:=c.ShouldBindJSON(&s); err!=nil {
- c.JSON(http.StatusBadRequest,err)
- return
-}
-fmt.Printf("After bind % #v\n",s)
-
-//add Student ->map ss
-id:=len(students)
-id++
-s.ID=id
-students[id]=s
-// response
- c.JSON(http.StatusOK,s)
-}
-
-func getStudentHandler(c *gin.Context){
- ss := []Student{}
- for _,s := range students{
-  ss=append(ss,s)
- }
-
- c.JSON(http.StatusOK,ss)
-}
-
-func pingPostHandler(c *gin.Context){
- response:=gin.H{"message":"This is ping POST",}
- c.JSON(http.StatusOK,response)
-}
 
 func getTodos(c *gin.Context) {
 	c.JSON(200, "Okay")
@@ -207,11 +163,6 @@ func putTodosByIdHandler(c *gin.Context){
 	`
 	db.QueryRow(query,idinput, t.Title, t.Status)
 
-	// err = row.Scan(&id)
-	// if err != nil {
-	// 	log.Fatal("can't scan id", id)
-	// }
-	//fmt.Println("Update success id", id)
 	t.ID, err = strconv.Atoi(idinput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,err)
@@ -222,12 +173,6 @@ func putTodosByIdHandler(c *gin.Context){
 }
 
 func main(){
-// r.GET("/ping",pingHandler)
-// r.POST("/ping",pingPostHandler)
-// r.GET("/students",getStudentHandler)
-// r.POST("/students",postStudentHandler)
-// r.GET("/api/todos",getTodos)
-// r.Run(":1234")
 	r := gin.Default()
 	r.GET("/api/todos", getTodosHandler)
 	r.GET("/api/todos/:id", getTodosByIdHandler)
